@@ -21,7 +21,28 @@ function displayProducts() {
         if (err) throw err;
         console.log(`ITEMS FOR SALE:\n-------------------------------------------------`);
         for (var i= 0; i < res.length; i++) {
-            console.log(`Id: ${res[i].item_id}|| Product Name: ${res[i].product_name}|| Price: $${res[i].price}`);
+            console.log(`Id: ${res[i].item_id}|| Product Name: ${res[i].product_name}|| Department: ${res[i].department_name} || Price: $${res[i].price}\n`);
         }
+        purchase();
     });
+}
+
+function purchase() {
+    inquirer
+        .prompt([{
+            name: "productID",
+            type: "input",
+            message: "Please enter the ID of the item you would like to purchase."
+        },
+
+        {
+            name: "unitAmount",
+            type: "input",
+            message: "How many units would you like to buy?"
+        }
+    ])
+        .then(function(answer) {
+            console.log(`Product: ${answer.productID}`);
+            console.log(`Amount: ${answer.unitAmount}`);
+        })
 }
