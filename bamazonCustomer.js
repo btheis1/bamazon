@@ -47,11 +47,16 @@ function purchase() {
             console.log(`Amount: ${answer.unitAmount}`);
             var id = parseInt(answer.productID);
             var amount = answer.unitAmount;
-            var query = "SELECT stock_quantity FROM products WHERE ?";
+            var query = "SELECT stock_quantity, price FROM products WHERE ?";
             connection.query(query, { item_id: id }, function(err, res){
                 var inventory = res[0].stock_quantity;
+                var cost = amount * res[0].price;
+                console.log(`Cost: ${cost}`);
                 console.log(inventory);
                 if (amount <= inventory) {
+                    
+                    // var cost = parseFloat(amount * res[0].price);
+                    // console.log(cost);
                     console.log(`You may purchase this item!`)
                 } else {
                     console.log(`Item out of stock! Try again!`)
