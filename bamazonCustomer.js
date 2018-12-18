@@ -43,25 +43,47 @@ function purchase() {
         }
     ])
         .then(function(answer) {
-            console.log(`Product: ${answer.productID}`);
-            console.log(`Amount: ${answer.unitAmount}`);
+            
             var id = parseInt(answer.productID);
-            var amount = answer.unitAmount;
-            var query = "SELECT stock_quantity, price FROM products WHERE ?";
+            var amount = parseInt(answer.unitAmount);
+            var query = "SELECT product_name, stock_quantity, price FROM products WHERE ?";
             connection.query(query, { item_id: id }, function(err, res){
                 var inventory = res[0].stock_quantity;
-                var cost = amount * res[0].price;
-                console.log(`Cost: ${cost}`);
-                console.log(inventory);
-                if (amount <= inventory) {
-                    
-                    // var cost = parseFloat(amount * res[0].price);
-                    // console.log(cost);
-                    console.log(`You may purchase this item!`)
+                console.log(`Product requested: ${res[0].product_name}`);
+                console.log(`Amount requested: ${answer.unitAmount}`);
+                if (amount >= inventory) {
+                    console.log(`Item out of stock! Try again!\n\n`);
+                    displayProducts();
                 } else {
-                    console.log(`Item out of stock! Try again!`)
+                    console.log(`You have purchased ${res[0].product_name}`)
+                    var cost = parseFloat(amount * res[0].price).toFixed(2);
+                    console.log(`Total cost: ${cost}`);
+                    var newInventory = inventory - amount
+                    console.log(`New: ${newInventory}`);
+                    function updateQuantity() {
+                       
+                        var query = connection.query("UPDATE products SET ? WHERE?",
+                        [
+                            {
+                                stock_quantity: newInventory
+                            },
+                            {
+                                item_id: id
+                            }
+                        ],
+                        function(err, res) {
+                            if (err) throw err;
+                            console.log(res.affectedRows + " product updated\n");
+                            }
+                        );
+                        
+                    }
+                    updateQuantity();
+                    console.log(`Make another purchase!`);
+                    displayProducts();
                 }
                 
             });
-        })
+        });
 }
+
